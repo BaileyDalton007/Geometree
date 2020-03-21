@@ -33,7 +33,9 @@ function resize() {
 };
 
 window.addEventListener('resize', resize, false);
+
 const dotArr = []
+let selectedDot = [];
 
 const createDot = () => {
     const texture = PIXI.Texture.from('/assets/dot.png');
@@ -61,14 +63,7 @@ function onDragStart(event) {
     this.data = event.data;
     this.alpha = 0.5;
     this.dragging = true;
-    if(selecting){
-        if (currStartPoint == false){
-            currStartPoint = dotArr[this.index];
-        } else if (currEndPoint == false) {
-            currEndPoint = dotArr[this.index];
-
-        }
-    }
+    selectedDot = dotArr[this.index]
 }
 
 function onDragEnd() {
@@ -95,10 +90,8 @@ const createLine = (startP, endP) => {
     console.log(lineArr)
     let startPoint = {x:startP.x, y:startP.y};
     let endPoint = {x:endP.x, y:endP.y};
-    console.log([startPoint, endPoint])
-
-    lineArr.push([startPoint, endPoint])
-    console.log("2"+ lineArr)
+    lineArr.push([startPoint, endPoint]);
+    console.log(lineArr)
 }
 
 const drawLine = (startPoint, endPoint) => {
@@ -120,20 +113,18 @@ const drawDotButton = () => {
     stage.addChild(button)
 }
 
-let currStartPoint = false;
-let currEndPoint = false;
+let currStartPoint = [];
+let currEndPoint = [];
 let selecting = false;
 
 const selectDots = () => {
     selecting = true;
-    if (currStartPoint && currEndPoint !== false){
-        console.log("s")
-        createLine(currStartPoint, currEndPoint);
-        selecting = false;
-    }
-console.log('t')
-currStartPoint = false;
-currEndPoint = false;
+    selectedDot = [];
+    //if (currStartPoint && currEndPoint !== false){
+    //    console.log("s")
+    //    createLine(currStartPoint, currEndPoint);
+    //    selecting = false;
+    //}
 
 }
 
@@ -158,8 +149,7 @@ const init = () => {
 const UpdateLine = () => {
     graph.clear();
     for (let i=0; i< lineArr.length; i++){
-        console.log(i)
-        drawLine(lineArr[i[0]], lineArr[i[1]])
+        drawLine(lineArr[i][0], lineArr[i][1])
     }
 }
 
@@ -169,5 +159,35 @@ renderer.stage.addChild(stage);
 
 renderer.ticker.add(function(delta) {
     //console.log(lineArr)
+/*    if (selecting){
+
+    if (currStartPoint && currEndPoint !== []){
+            console.log("s")
+            //createLine(, currEndPoint);
+            selecting = false;
+            selectedDot = [];
+        } else if (currStartPoint !== []){
+            console.log('y');
+            currEndPoint = selectedDot
+        } else {
+            console.log('z');
+            currStartPoint = selectedDot
+        }
+    } */
+    if (selecting){
+            if (selectedDot !== []){
+                if (currStartPoint == []) {
+                    currStartPoint = selectedDot;
+                } else if (currEndPoint ==[]) {
+                    currEndPoint = selectedDot;
+                } else if (currStartPoint && currEndPoint !== []){
+                    createLine(currStartPoint, currEndPoint);
+                    currEndPoint = [];
+                    currStartPoint = [];
+                    selecting = false;
+                }
+            }
+    }
+    //console.log(selectedDot)
     UpdateLine();
 });
