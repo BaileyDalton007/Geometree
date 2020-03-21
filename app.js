@@ -35,7 +35,7 @@ function resize() {
 window.addEventListener('resize', resize, false);
 
 const dotArr = []
-let selectedDot = [];
+let selectedDotIndex
 
 const createDot = () => {
     const texture = PIXI.Texture.from('/assets/dot.png');
@@ -51,9 +51,15 @@ const createDot = () => {
         .on('pointerdown', onDragStart)
         .on('pointerup', onDragEnd)
         .on('pointerupoutside', onDragEnd)
-        .on('pointermove', onDragMove);
+        .on('pointermove', onDragMove)
+        .on('rightdown', rightClick);
+
     stage.addChild(dot);
     dotArr.push(dot);
+}
+
+const rightClick = () => {
+    console.log('click');
 }
 
 function onDragStart(event) {
@@ -63,7 +69,7 @@ function onDragStart(event) {
     this.data = event.data;
     this.alpha = 0.5;
     this.dragging = true;
-    selectedDot = dotArr[this.index]
+    selectedDotIndex = this.index
 }
 
 function onDragEnd() {
@@ -78,7 +84,6 @@ function onDragMove() {
         const newPosition = this.data.getLocalPosition(this.parent);
         this.x = newPosition.x;
         this.y = newPosition.y;
-        //console.log(Math.round(this.x), Math.round(this.y));
     }
 }
 stage.addChild(graph);
@@ -86,18 +91,21 @@ graph.position.set(0,0);
 
 const lineArr =[];
 
-const createLine = (startP, endP) => {
-    console.log(lineArr)
-    let startPoint = {x:startP.x, y:startP.y};
-    let endPoint = {x:endP.x, y:endP.y};
-    lineArr.push([startPoint, endPoint]);
-    console.log(lineArr)
+const createLine = (startDotIndex, endDotIndex) => {
+    const line = {
+        index: lineArr.length,
+        startDotIndex: startDotIndex,
+        endDotIndex: endDotIndex
+    }
+    lineArr.push(line);
 }
 
-const drawLine = (startPoint, endPoint) => {
+const drawLine = (startDotIndex, endDotIndex) => {
+    let startDot = dotArr[startDotIndex]
+    let endDot = dotArr[endDotIndex]
     graph.lineStyle(10, 0xffff00)
-        .moveTo(startPoint.x, startPoint.y)
-        .lineTo(endPoint.x, endPoint.y);
+        .moveTo(startDot.x, startDot.y)
+        .lineTo(endDot.x, endDot.y);
 }
 
 const drawDotButton = () => {
@@ -113,21 +121,6 @@ const drawDotButton = () => {
     stage.addChild(button)
 }
 
-let currStartPoint = [];
-let currEndPoint = [];
-let selecting = false;
-
-const selectDots = () => {
-    selecting = true;
-    selectedDot = [];
-    //if (currStartPoint && currEndPoint !== false){
-    //    console.log("s")
-    //    createLine(currStartPoint, currEndPoint);
-    //    selecting = false;
-    //}
-
-}
-
 const drawLineButton = () => {
     const texture = PIXI.Texture.from('/assets/addLine.png');
     const button = new PIXI.Sprite(texture);
@@ -137,8 +130,34 @@ const drawLineButton = () => {
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
-    button.on('pointerdown', selectDots);
+    button.on('pointerdown', makeSelecting);
     stage.addChild(button)
+}
+
+let selecting = false;
+let startP = undefined;
+let endP = undefined;
+
+const makeSelecting = () => {
+    selecting = true;
+    selectedDotIndex = undefined;
+    startP = undefined;
+    endP = undefined;
+
+};
+
+const selectDots = () => {
+    if (selecting) {
+        if (selectedDotIndex !== undefined){
+            if (startP == undefined){
+                startP = selectedDotIndex;
+            } else if (endP == undefined && selectedDotIndex !== startP){
+                endP = selectedDotIndex;
+                createLine(startP, endP);
+                selecting = false;
+            }
+        }
+    }
 }
 
 const init = () => {
@@ -149,7 +168,7 @@ const init = () => {
 const UpdateLine = () => {
     graph.clear();
     for (let i=0; i< lineArr.length; i++){
-        drawLine(lineArr[i][0], lineArr[i][1])
+        drawLine(lineArr[i].startDotIndex, lineArr[i].endDotIndex)
     }
 }
 
@@ -158,36 +177,6 @@ init();
 renderer.stage.addChild(stage);
 
 renderer.ticker.add(function(delta) {
-    //console.log(lineArr)
-/*    if (selecting){
-
-    if (currStartPoint && currEndPoint !== []){
-            console.log("s")
-            //createLine(, currEndPoint);
-            selecting = false;
-            selectedDot = [];
-        } else if (currStartPoint !== []){
-            console.log('y');
-            currEndPoint = selectedDot
-        } else {
-            console.log('z');
-            currStartPoint = selectedDot
-        }
-    } */
-    if (selecting){
-            if (selectedDot !== []){
-                if (currStartPoint == []) {
-                    currStartPoint = selectedDot;
-                } else if (currEndPoint ==[]) {
-                    currEndPoint = selectedDot;
-                } else if (currStartPoint && currEndPoint !== []){
-                    createLine(currStartPoint, currEndPoint);
-                    currEndPoint = [];
-                    currStartPoint = [];
-                    selecting = false;
-                }
-            }
-    }
-    //console.log(selectedDot)
+    selectDots();
     UpdateLine();
 });
