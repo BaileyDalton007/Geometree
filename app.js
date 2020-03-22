@@ -7,11 +7,12 @@ const renderer = new PIXI.Application({
     view: canvas
 })
 
-const stage = new PIXI.Container();
+const board = new PIXI.Container();
+const gui = new PIXI.Container();
 const menuCon = new PIXI.Container();
 menuCon.sortableChildren = true;
 
-stage.interactive = true;
+board.interactive = true;
 let graph = new PIXI.Graphics();
 
 //Resizes canvas to hopfully fit full window, its close enough
@@ -38,7 +39,7 @@ function resize() {
 
 window.addEventListener('resize', resize, false);
 
-const dotArr = []
+let dotArr = []
 let selectedDotIndex
 
 const createDot = () => {
@@ -59,7 +60,7 @@ const createDot = () => {
         .on('pointermove', onDragMove)
         .on('rightdown', rightClick);
 
-    stage.addChild(dot);
+    board.addChild(dot);
     dotArr.push(dot);
 }
 
@@ -92,10 +93,10 @@ function onDragMove() {
         this.y = newPosition.y;
     }
 }
-stage.addChild(graph);
+
 graph.position.set(0,0);
 
-const lineArr =[];
+let lineArr =[];
 
 const createLine = (startDotIndex, endDotIndex) => {
     const line = {
@@ -107,11 +108,20 @@ const createLine = (startDotIndex, endDotIndex) => {
 }
 
 const drawLine = (startDotIndex, endDotIndex) => {
+    console.log(startDotIndex, endDotIndex)
     let startDot = dotArr[startDotIndex]
     let endDot = dotArr[endDotIndex]
     graph.lineStyle(10, 0xffff00)
         .moveTo(startDot.x, startDot.y)
         .lineTo(endDot.x, endDot.y);
+}
+
+const clearBoard = () => {
+    for (let i = board.children.length - 1; i >= 0; i--) {
+        board.removeChild(board.children[i]);
+    }
+    dotArr = [];
+    lineArr = [];
 }
 
 const drawDotButton = () => {
@@ -136,7 +146,7 @@ const drawTrashButton = () => {
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
-    button.on('pointerdown', makeSelecting);
+    button.on('pointerdown', clearBoard);
     menuCon.addChild(button)
 }
 
@@ -163,7 +173,7 @@ const drawMenuButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on('pointerdown',openMenu);
-    stage.addChild(button)
+    gui.addChild(button)
 }
 
 let isMenuOpen = false
@@ -177,7 +187,6 @@ const openMenu = () => {
         ui.interactive = true;
         ui.buttonMode = false;
         //ui.anchor.set(0.5);
-        ui.on('pointerdown',openMenu);
         ui.zIndex = -1;
         menuCon.addChild(ui)
         renderer.stage.addChild(menuCon);
@@ -231,7 +240,10 @@ const UpdateLine = () => {
 
 init();
 //window.addEventListener("mousemove", UpdateLine);
-renderer.stage.addChild(stage);
+renderer.stage.addChild(graph);
+renderer.stage.addChild(board);
+renderer.stage.addChild(gui);
+
 
 renderer.ticker.add(function(delta) {
     selectDots();
