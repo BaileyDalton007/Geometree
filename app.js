@@ -9,6 +9,7 @@ const renderer = new PIXI.Application({
 
 const stage = new PIXI.Container();
 const menuCon = new PIXI.Container();
+menuCon.sortableChildren = true;
 
 stage.interactive = true;
 let graph = new PIXI.Graphics();
@@ -116,27 +117,40 @@ const drawLine = (startDotIndex, endDotIndex) => {
 const drawDotButton = () => {
     const texture = PIXI.Texture.from('/assets/addDot.png');
     const button = new PIXI.Sprite(texture);
-    button.x = 100;
-    button.y = 800;
+    button.x = 1700;
+    button.y = 100;
     button.scale.set(0.06, 0.06);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on('pointerdown',createDot);
-    stage.addChild(button)
+    menuCon.addChild(button)
+}
+
+const drawTrashButton = () => {
+    const texture = PIXI.Texture.from('/assets/trash.png');
+    const button = new PIXI.Sprite(texture);
+    button.x = 1700;
+    button.y = 200;
+    button.scale.set(0.2, 0.2);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on('pointerdown', makeSelecting);
+    menuCon.addChild(button)
 }
 
 const drawLineButton = () => {
     const texture = PIXI.Texture.from('/assets/addLine.png');
     const button = new PIXI.Sprite(texture);
-    button.x = 200;
-    button.y = 800;
+    button.x = 1800;
+    button.y = 100;
     button.scale.set(0.06, 0.06);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on('pointerdown', makeSelecting);
-    stage.addChild(button)
+    menuCon.addChild(button)
 }
 
 const drawMenuButton = () => {
@@ -151,6 +165,7 @@ const drawMenuButton = () => {
     button.on('pointerdown',openMenu);
     stage.addChild(button)
 }
+
 let isMenuOpen = false
 const openMenu = () => {
         if (isMenuOpen == false){
@@ -163,6 +178,7 @@ const openMenu = () => {
         ui.buttonMode = false;
         //ui.anchor.set(0.5);
         ui.on('pointerdown',openMenu);
+        ui.zIndex = -1;
         menuCon.addChild(ui)
         renderer.stage.addChild(menuCon);
         isMenuOpen = true;
@@ -171,6 +187,7 @@ const openMenu = () => {
         isMenuOpen = false;
     }
 }
+
 
 let selecting = false;
 let startP = undefined;
@@ -202,6 +219,7 @@ const init = () => {
     drawDotButton();
     drawLineButton();
     drawMenuButton();
+    drawTrashButton();
     }
 
 const UpdateLine = () => {
