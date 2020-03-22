@@ -1,5 +1,6 @@
 var canvas = document.getElementById('canvas');
 
+PIXI.utils.skipHello()
 const renderer = new PIXI.Application({
     width:window.innerWidth,
     height:window.innerHeight,
@@ -7,6 +8,8 @@ const renderer = new PIXI.Application({
 })
 
 const stage = new PIXI.Container();
+const menuCon = new PIXI.Container();
+
 stage.interactive = true;
 let graph = new PIXI.Graphics();
 
@@ -42,7 +45,8 @@ const createDot = () => {
     const dot = new PIXI.Sprite(texture);
     dot.x = 100;
     dot.y = 100;
-    dot.index = dotArr.length
+    dot.index = dotArr.length;
+    dot.name = undefined;
     dot.scale.set(0.03, 0.03);
     dot.interactive = true;
     dot.buttonMode = true;
@@ -59,8 +63,9 @@ const createDot = () => {
 }
 
 const rightClick = () => {
-    console.log('click');
+    console.log('click'); 
 }
+
 
 function onDragStart(event) {
     // store a reference to the data
@@ -134,6 +139,39 @@ const drawLineButton = () => {
     stage.addChild(button)
 }
 
+const drawMenuButton = () => {
+    const texture = PIXI.Texture.from('/assets/menu.png');
+    const button = new PIXI.Sprite(texture);
+    button.x = 1500;
+    button.y = 100;
+    button.scale.set(0.1, 0.1);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on('pointerdown',openMenu);
+    stage.addChild(button)
+}
+let isMenuOpen = false
+const openMenu = () => {
+        if (isMenuOpen == false){
+        const texture = PIXI.Texture.from('/assets/uiBackground.png');
+        const ui = new PIXI.Sprite(texture);
+        ui.x = 1600;
+        ui.y = 0;
+        ui.scale.set(1, 3);
+        ui.interactive = true;
+        ui.buttonMode = false;
+        //ui.anchor.set(0.5);
+        ui.on('pointerdown',openMenu);
+        menuCon.addChild(ui)
+        renderer.stage.addChild(menuCon);
+        isMenuOpen = true;
+    } else {
+        renderer.stage.removeChild(menuCon);
+        isMenuOpen = false;
+    }
+}
+
 let selecting = false;
 let startP = undefined;
 let endP = undefined;
@@ -163,6 +201,7 @@ const selectDots = () => {
 const init = () => {
     drawDotButton();
     drawLineButton();
+    drawMenuButton();
     }
 
 const UpdateLine = () => {
