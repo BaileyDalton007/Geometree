@@ -1,6 +1,6 @@
 var canvas = document.getElementById('canvas');
+PIXI.utils.skipHello();
 
-PIXI.utils.skipHello()
 const renderer = new PIXI.Application({
     width:window.innerWidth,
     height:window.innerHeight,
@@ -10,7 +10,11 @@ const renderer = new PIXI.Application({
 const board = new PIXI.Container();
 const gui = new PIXI.Container();
 const menuCon = new PIXI.Container();
+const optionsCon = new PIXI.Container();
+const stage = new PIXI.Container();
 menuCon.sortableChildren = true;
+stage.sortableChildren = true;
+gui.zIndex = 1;
 
 board.interactive = true;
 let graph = new PIXI.Graphics();
@@ -108,7 +112,6 @@ const createLine = (startDotIndex, endDotIndex) => {
 }
 
 const drawLine = (startDotIndex, endDotIndex) => {
-    console.log(startDotIndex, endDotIndex)
     let startDot = dotArr[startDotIndex]
     let endDot = dotArr[endDotIndex]
     graph.lineStyle(10, 0xffff00)
@@ -124,12 +127,35 @@ const clearBoard = () => {
     lineArr = [];
 }
 
+let textArr = [];
+
+const addText = () => {
+    let chars = [];
+    window.addEventListener('keypress', function (e) {
+        if (e.keyCode !== 13) {
+                    chars.push(e.key);
+        }
+    }, false);
+    window.addEventListener('keyup', function (e) {
+        if (e.keyCode === 13) {
+            let textContent = chars.join('');
+            textArr.push(textContent);
+            console.log(textContent);
+    chars = [];
+           }
+    }, false);
+};
+
+const drawText = () => {
+    
+}
+
 const drawDotButton = () => {
     const texture = PIXI.Texture.from('/assets/addDot.png');
     const button = new PIXI.Sprite(texture);
-    button.x = 1700;
+    button.x = window.innerWidth - 150;
     button.y = 100;
-    button.scale.set(0.06, 0.06);
+    button.scale.set(0.03, 0.03);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
@@ -140,9 +166,9 @@ const drawDotButton = () => {
 const drawTrashButton = () => {
     const texture = PIXI.Texture.from('/assets/trash.png');
     const button = new PIXI.Sprite(texture);
-    button.x = 1700;
-    button.y = 200;
-    button.scale.set(0.2, 0.2);
+    button.x = window.innerWidth - 150;
+    button.y = 150;
+    button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
@@ -150,12 +176,25 @@ const drawTrashButton = () => {
     menuCon.addChild(button)
 }
 
+const drawTextButton = () => {
+    const texture = PIXI.Texture.from('/assets/addText.png');
+    const button = new PIXI.Sprite(texture);
+    button.x = window.innerWidth - 100;
+    button.y = 150;
+    button.scale.set(0.1, 0.1);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on('pointerdown', addText);
+    menuCon.addChild(button)
+}
+
 const drawLineButton = () => {
     const texture = PIXI.Texture.from('/assets/addLine.png');
     const button = new PIXI.Sprite(texture);
-    button.x = 1800;
+    button.x = window.innerWidth - 100;
     button.y = 100;
-    button.scale.set(0.06, 0.06);
+    button.scale.set(0.03, 0.03);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
@@ -166,7 +205,7 @@ const drawLineButton = () => {
 const drawMenuButton = () => {
     const texture = PIXI.Texture.from('/assets/menu.png');
     const button = new PIXI.Sprite(texture);
-    button.x = 1500;
+    button.x = window.innerWidth - 200;
     button.y = 100;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
@@ -176,12 +215,49 @@ const drawMenuButton = () => {
     gui.addChild(button)
 }
 
-let isMenuOpen = false
-const openMenu = () => {
-        if (isMenuOpen == false){
+const drawOptionButton = () => {
+    const texture = PIXI.Texture.from('/assets/options.png');
+    const button = new PIXI.Sprite(texture);
+    button.x = window.innerWidth - 200;
+    button.y = 150;
+    button.scale.set(0.1, 0.1);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on('pointerdown',openOptions);
+    gui.addChild(button)
+}
+
+let isOptionsOpen = false
+const openOptions = () => {
+    if (isOptionsOpen == false){
+        isOptionsOpen = true;
+        if (isMenuOpen == true) {openMenu();};
         const texture = PIXI.Texture.from('/assets/uiBackground.png');
         const ui = new PIXI.Sprite(texture);
-        ui.x = 1600;
+        ui.x = window.innerWidth - 200;
+        ui.y = 0;
+        ui.scale.set(1, 3);
+        ui.interactive = true;
+        ui.buttonMode = false;
+        //ui.anchor.set(0.5);
+        ui.zIndex = -1;
+        optionsCon.addChild(ui)
+        renderer.stage.addChild(optionsCon);
+    } else {
+        renderer.stage.removeChild(optionsCon);
+        isOptionsOpen = false;
+    }
+}
+
+let isMenuOpen = false
+const openMenu = () => {
+    if (isMenuOpen == false){
+        isMenuOpen = true;
+        if (isOptionsOpen == true) {openOptions();};
+        const texture = PIXI.Texture.from('/assets/uiBackground.png');
+        const ui = new PIXI.Sprite(texture);
+        ui.x = window.innerWidth - 200;
         ui.y = 0;
         ui.scale.set(1, 3);
         ui.interactive = true;
@@ -190,7 +266,6 @@ const openMenu = () => {
         ui.zIndex = -1;
         menuCon.addChild(ui)
         renderer.stage.addChild(menuCon);
-        isMenuOpen = true;
     } else {
         renderer.stage.removeChild(menuCon);
         isMenuOpen = false;
@@ -227,8 +302,10 @@ const selectDots = () => {
 const init = () => {
     drawDotButton();
     drawLineButton();
-    drawMenuButton();
     drawTrashButton();
+    drawTextButton();
+    drawMenuButton();
+    drawOptionButton();
     }
 
 const UpdateLine = () => {
@@ -240,9 +317,10 @@ const UpdateLine = () => {
 
 init();
 //window.addEventListener("mousemove", UpdateLine);
-renderer.stage.addChild(graph);
-renderer.stage.addChild(board);
-renderer.stage.addChild(gui);
+stage.addChild(graph)
+stage.addChild(board);
+stage.addChild(gui);
+renderer.stage.addChild(stage);
 
 
 renderer.ticker.add(function(delta) {
