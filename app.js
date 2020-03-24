@@ -51,7 +51,7 @@ let dotArr = []
 let selectedDotIndex
 
 const createDot = () => {
-    const texture = PIXI.Texture.from('/assets/dot.png');
+    const texture = PIXI.Texture.from('/geometree/assets/dot.png');
     const dot = new PIXI.Sprite(texture);
     dot.x = 100;
     dot.y = 100;
@@ -169,7 +169,7 @@ const drawText = () => {
 let tPointArr = [];
 
 const drawPickPoint = (x, y) => {
-    const texture = PIXI.Texture.from('/assets/dot.png');
+    const texture = PIXI.Texture.from('/geometree/assets/dot.png');
     const dot = new PIXI.Sprite(texture);
     dot.x = x;
     dot.y = y;
@@ -211,7 +211,7 @@ const takeScreenshot = () => {
 }
 
 const drawDotButton = () => {
-    const texture = PIXI.Texture.from('/assets/addDot.png');
+    const texture = PIXI.Texture.from('/geometree/assets/addDot.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 150;
     button.y = 100;
@@ -224,7 +224,7 @@ const drawDotButton = () => {
 }
 
 const drawTrashButton = () => {
-    const texture = PIXI.Texture.from('/assets/trash.png');
+    const texture = PIXI.Texture.from('/geometree/assets/trash.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 150;
     button.y = 170;
@@ -237,7 +237,7 @@ const drawTrashButton = () => {
 }
 
 const drawTextButton = () => {
-    const texture = PIXI.Texture.from('/assets/addText.png');
+    const texture = PIXI.Texture.from('/geometree/assets/addText.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 80;
     button.y = 170;
@@ -250,7 +250,7 @@ const drawTextButton = () => {
 }
 
 const drawLineButton = () => {
-    const texture = PIXI.Texture.from('/assets/addLine.png');
+    const texture = PIXI.Texture.from('/geometree/assets/addLine.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 80;
     button.y = 100;
@@ -263,7 +263,7 @@ const drawLineButton = () => {
 }
 
 const drawScreenShotButton = () => {
-    const texture = PIXI.Texture.from('/assets/screenshot.png');
+    const texture = PIXI.Texture.from('/geometree/assets/screenshot.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 150;
     button.y = 240;
@@ -276,7 +276,7 @@ const drawScreenShotButton = () => {
 }
 
 const drawMenuButton = () => {
-    const texture = PIXI.Texture.from('/assets/menu.png');
+    const texture = PIXI.Texture.from('/geometree/assets/menu.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 225;
     button.y = 100;
@@ -290,7 +290,7 @@ const drawMenuButton = () => {
 }
 
 const drawOptionButton = () => {
-    const texture = PIXI.Texture.from('/assets/options.png');
+    const texture = PIXI.Texture.from('/geometree/assets/options.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 225;
     button.y = 150;
@@ -308,7 +308,7 @@ const openOptions = () => {
     if (isOptionsOpen == false){
         isOptionsOpen = true;
         if (isMenuOpen == true) {openMenu();};
-        const texture = PIXI.Texture.from('/assets/uiBackground.png');
+        const texture = PIXI.Texture.from('/geometree/assets/uiBackground.png');
         const ui = new PIXI.Sprite(texture);
         ui.x = windowWidth - 200;
         ui.y = 0;
@@ -330,7 +330,7 @@ const openMenu = () => {
     if (isMenuOpen == false){
         isMenuOpen = true;
         if (isOptionsOpen == true) {openOptions();};
-        const texture = PIXI.Texture.from('/assets/uiBackground.png');
+        const texture = PIXI.Texture.from('/geometree/assets/uiBackground.png');
         const ui = new PIXI.Sprite(texture);
         ui.x = windowWidth - 200;
         ui.y = 0;
