@@ -1,6 +1,9 @@
 var canvas = document.getElementById('canvas');
 PIXI.utils.skipHello();
 
+const windowWidth = window.innerWidth
+const windowHeight = window.innerHeight
+
 const renderer = new PIXI.Application({
     width:window.innerWidth,
     height:window.innerHeight,
@@ -12,9 +15,10 @@ const gui = new PIXI.Container();
 const menuCon = new PIXI.Container();
 const optionsCon = new PIXI.Container();
 const stage = new PIXI.Container();
+
 menuCon.sortableChildren = true;
 stage.sortableChildren = true;
-gui.zIndex = 1;
+gui.zIndex = 10;
 
 board.interactive = true;
 let graph = new PIXI.Graphics();
@@ -58,7 +62,7 @@ const createDot = () => {
     dot.buttonMode = true;
     dot.anchor.set(0.5);
     dot
-        .on('pointerdown', onDragStart)
+        .on('pointerdown', onDotDragStart)
         .on('pointerup', onDragEnd)
         .on('pointerupoutside', onDragEnd)
         .on('pointermove', onDragMove)
@@ -72,6 +76,15 @@ const rightClick = () => {
     console.log('click'); 
 }
 
+function onDotDragStart(event) {
+    // store a reference to the data
+    // the reason for this is because of multitouch
+    // we want to track the movement of this particular touch
+    this.data = event.data;
+    this.alpha = 0.5;
+    this.dragging = true;
+    selectedDotIndex = this.index
+}
 
 function onDragStart(event) {
     // store a reference to the data
@@ -125,35 +138,69 @@ const clearBoard = () => {
     }
     dotArr = [];
     lineArr = [];
+    textArr = [];
+    tPointArr = [];
 }
+
+const style = {
+    fill: "#ffff00"
+
+};
 
 let textArr = [];
 
-const addText = () => {
-    let chars = [];
-    window.addEventListener('keypress', function (e) {
-        if (e.keyCode !== 13) {
-                    chars.push(e.key);
-        }
-    }, false);
-    window.addEventListener('keyup', function (e) {
-        if (e.keyCode === 13) {
-            let textContent = chars.join('');
-            textArr.push(textContent);
-            console.log(textContent);
-    chars = [];
-           }
-    }, false);
+const drawText = () => {
+    let input = new PixiTextInput("text", style);
+    input.width = 400;
+    input.background = false;
+    input.position.x = 100;
+    input.position.y = 250;
+    //input.wordWrap = true;
+    //input.wordWrapWidth = 40,
+    //input.width = input.text * 5; + 100
+    input.caretColor = 0xffffff;
+    console.log(input.width);
+    drawPickPoint((input.x + (input.width/2)) + 65, input.y + (input.height/2))
+    input.on('pointerdown', drawPickPoint);
+    textArr.push(input);
+    board.addChild(input);
 };
 
-const drawText = () => {
-    
-}
+let tPointArr = [];
+
+const drawPickPoint = (x, y) => {
+    const texture = PIXI.Texture.from('/assets/dot.png');
+    const dot = new PIXI.Sprite(texture);
+    dot.x = x;
+    dot.y = y;
+    dot.interactive = true;
+    dot.buttonMode = true;
+    dot.scale.set(0.03,0.03);
+    dot.anchor.set(0.5);
+    dot
+        .on('pointerdown', onDragStart)
+        .on('pointerup', onDragEnd)
+        .on('pointerupoutside', onDragEnd)
+        .on('pointermove', onDragMove)
+        .on('rightdown', rightClick);
+    tPointArr.push(dot);
+    board.addChild(dot);
+};
+
+const updateText = () => {
+    if (textArr.length > 0) {
+        for (let i=0; i< textArr.length; i++){
+            textArr[i].width = (textArr[i].text.length)*15 + 20
+            textArr[i].x = tPointArr[i].x;
+            textArr[i].y = tPointArr[i].y;
+        }
+    }
+} 
 
 const drawDotButton = () => {
     const texture = PIXI.Texture.from('/assets/addDot.png');
     const button = new PIXI.Sprite(texture);
-    button.x = window.innerWidth - 150;
+    button.x = windowWidth - 150;
     button.y = 100;
     button.scale.set(0.03, 0.03);
     button.interactive = true;
@@ -166,7 +213,7 @@ const drawDotButton = () => {
 const drawTrashButton = () => {
     const texture = PIXI.Texture.from('/assets/trash.png');
     const button = new PIXI.Sprite(texture);
-    button.x = window.innerWidth - 150;
+    button.x = windowWidth - 150;
     button.y = 150;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
@@ -179,20 +226,20 @@ const drawTrashButton = () => {
 const drawTextButton = () => {
     const texture = PIXI.Texture.from('/assets/addText.png');
     const button = new PIXI.Sprite(texture);
-    button.x = window.innerWidth - 100;
+    button.x = windowWidth - 100;
     button.y = 150;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
-    button.on('pointerdown', addText);
+    button.on('pointerdown', drawText);
     menuCon.addChild(button)
 }
 
 const drawLineButton = () => {
     const texture = PIXI.Texture.from('/assets/addLine.png');
     const button = new PIXI.Sprite(texture);
-    button.x = window.innerWidth - 100;
+    button.x = windowWidth - 100;
     button.y = 100;
     button.scale.set(0.03, 0.03);
     button.interactive = true;
@@ -205,12 +252,13 @@ const drawLineButton = () => {
 const drawMenuButton = () => {
     const texture = PIXI.Texture.from('/assets/menu.png');
     const button = new PIXI.Sprite(texture);
-    button.x = window.innerWidth - 200;
+    button.x = windowWidth - 200;
     button.y = 100;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
+    button.zIndex = 10;
     button.on('pointerdown',openMenu);
     gui.addChild(button)
 }
@@ -218,11 +266,12 @@ const drawMenuButton = () => {
 const drawOptionButton = () => {
     const texture = PIXI.Texture.from('/assets/options.png');
     const button = new PIXI.Sprite(texture);
-    button.x = window.innerWidth - 200;
+    button.x = windowWidth - 200;
     button.y = 150;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
+    button.zIndex = 10;
     button.anchor.set(0.5);
     button.on('pointerdown',openOptions);
     gui.addChild(button)
@@ -235,7 +284,7 @@ const openOptions = () => {
         if (isMenuOpen == true) {openMenu();};
         const texture = PIXI.Texture.from('/assets/uiBackground.png');
         const ui = new PIXI.Sprite(texture);
-        ui.x = window.innerWidth - 200;
+        ui.x = windowWidth - 200;
         ui.y = 0;
         ui.scale.set(1, 3);
         ui.interactive = true;
@@ -257,7 +306,7 @@ const openMenu = () => {
         if (isOptionsOpen == true) {openOptions();};
         const texture = PIXI.Texture.from('/assets/uiBackground.png');
         const ui = new PIXI.Sprite(texture);
-        ui.x = window.innerWidth - 200;
+        ui.x = windowWidth - 200;
         ui.y = 0;
         ui.scale.set(1, 3);
         ui.interactive = true;
@@ -308,7 +357,7 @@ const init = () => {
     drawOptionButton();
     }
 
-const UpdateLine = () => {
+const updateLine = () => {
     graph.clear();
     for (let i=0; i< lineArr.length; i++){
         drawLine(lineArr[i].startDotIndex, lineArr[i].endDotIndex)
@@ -325,5 +374,6 @@ renderer.stage.addChild(stage);
 
 renderer.ticker.add(function(delta) {
     selectDots();
-    UpdateLine();
+    updateLine();
+    updateText();
 });
