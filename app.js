@@ -57,7 +57,7 @@ const createDot = () => {
     dot.y = 100;
     dot.index = dotArr.length;
     dot.name = undefined;
-    dot.scale.set(0.03, 0.03);
+    dot.scale.set(0.06, 0.06);
     dot.interactive = true;
     dot.buttonMode = true;
     dot.anchor.set(0.5);
@@ -127,7 +127,7 @@ const createLine = (startDotIndex, endDotIndex) => {
 const drawLine = (startDotIndex, endDotIndex) => {
     let startDot = dotArr[startDotIndex]
     let endDot = dotArr[endDotIndex]
-    graph.lineStyle(10, 0xffff00)
+    graph.lineStyle(8, 0xF4A0F4)
         .moveTo(startDot.x, startDot.y)
         .lineTo(endDot.x, endDot.y);
 }
@@ -143,7 +143,7 @@ const clearBoard = () => {
 }
 
 const style = {
-    fill: "#ffff00"
+    fill: "#DB8EDB"
 
 };
 
@@ -215,7 +215,7 @@ const drawDotButton = () => {
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 150;
     button.y = 100;
-    button.scale.set(0.03, 0.03);
+    button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
@@ -227,7 +227,7 @@ const drawTrashButton = () => {
     const texture = PIXI.Texture.from('/assets/trash.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 150;
-    button.y = 150;
+    button.y = 170;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
@@ -239,8 +239,8 @@ const drawTrashButton = () => {
 const drawTextButton = () => {
     const texture = PIXI.Texture.from('/assets/addText.png');
     const button = new PIXI.Sprite(texture);
-    button.x = windowWidth - 100;
-    button.y = 150;
+    button.x = windowWidth - 80;
+    button.y = 170;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
@@ -252,9 +252,9 @@ const drawTextButton = () => {
 const drawLineButton = () => {
     const texture = PIXI.Texture.from('/assets/addLine.png');
     const button = new PIXI.Sprite(texture);
-    button.x = windowWidth - 100;
+    button.x = windowWidth - 80;
     button.y = 100;
-    button.scale.set(0.03, 0.03);
+    button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
@@ -266,8 +266,8 @@ const drawScreenShotButton = () => {
     const texture = PIXI.Texture.from('/assets/screenshot.png');
     const button = new PIXI.Sprite(texture);
     button.x = windowWidth - 150;
-    button.y = 200;
-    button.scale.set(0.15, 0.15);
+    button.y = 240;
+    button.scale.set(0.1, 0.1);
     button.interactive = true;
     button.buttonMode = true;
     button.anchor.set(0.5);
@@ -278,7 +278,7 @@ const drawScreenShotButton = () => {
 const drawMenuButton = () => {
     const texture = PIXI.Texture.from('/assets/menu.png');
     const button = new PIXI.Sprite(texture);
-    button.x = windowWidth - 200;
+    button.x = windowWidth - 225;
     button.y = 100;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
@@ -292,7 +292,7 @@ const drawMenuButton = () => {
 const drawOptionButton = () => {
     const texture = PIXI.Texture.from('/assets/options.png');
     const button = new PIXI.Sprite(texture);
-    button.x = windowWidth - 200;
+    button.x = windowWidth - 225;
     button.y = 150;
     button.scale.set(0.1, 0.1);
     button.interactive = true;
