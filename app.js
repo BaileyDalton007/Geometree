@@ -197,6 +197,19 @@ const updateText = () => {
     }
 } 
 
+let wait = false;
+const takeScreenshot = () => {
+    wait = true;
+    renderer.renderer.extract.canvas(renderer.stage).toBlob((b) => {
+        const a = document.createElement('a');
+        document.body.append(a);
+        a.download = 'screenshot';
+        a.href = URL.createObjectURL(b);
+        a.click();
+        a.remove();
+    }, 'image/png');
+}
+
 const drawDotButton = () => {
     const texture = PIXI.Texture.from('/assets/addDot.png');
     const button = new PIXI.Sprite(texture);
@@ -246,6 +259,19 @@ const drawLineButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on('pointerdown', makeSelecting);
+    menuCon.addChild(button)
+}
+
+const drawScreenShotButton = () => {
+    const texture = PIXI.Texture.from('/assets/screenshot.png');
+    const button = new PIXI.Sprite(texture);
+    button.x = windowWidth - 150;
+    button.y = 200;
+    button.scale.set(0.15, 0.15);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on('pointerdown', takeScreenshot);
     menuCon.addChild(button)
 }
 
@@ -353,6 +379,7 @@ const init = () => {
     drawLineButton();
     drawTrashButton();
     drawTextButton();
+    drawScreenShotButton();
     drawMenuButton();
     drawOptionButton();
     }
