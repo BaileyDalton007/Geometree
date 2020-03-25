@@ -258,7 +258,7 @@ const drawLineButton = () => {
   button.buttonMode = true;
   button.anchor.set(0.5);
   button.on("pointerdown", makeSelecting);
-  menuCon.addChild(butto);
+  menuCon.addChild(button);
 };
 
 const drawScreenShotButton = () => {
