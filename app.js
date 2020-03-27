@@ -467,14 +467,12 @@ const selectDotsForCir = () => {
 let circleArr = [];
 
 const createCircle = (c, r) => {
-	console.log(circleArr.length)
 	const circle = {
 		index : circleArr.length,
 		centerIndex : c,
 		radiusIndex : r
 	}
 	circleArr.push(circle)
-	console.log(circleArr.length)
 
 }
 
@@ -488,7 +486,7 @@ const drawCircle = (c, r) => {
 
 const updateCircles = () => {
 	for (let i = 0; i < circleArr.length; i++) {
-		graph.lineStyle(2, 0xFEEB77, 1);
+		graph.lineStyle(8, 0xf4a0f4, 1);
         drawCircle(circleArr[i].centerIndex, circleArr[i].radiusIndex);
     }
 }
