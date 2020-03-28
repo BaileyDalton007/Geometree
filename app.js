@@ -14,6 +14,8 @@ const board = new PIXI.Container();
 const gui = new PIXI.Container();
 const menuCon = new PIXI.Container();
 const optionsCon = new PIXI.Container();
+const infoCon = new PIXI.Container();
+
 const stage = new PIXI.Container();
 
 menuCon.sortableChildren = true;
@@ -246,6 +248,37 @@ const updatePointNames = () => {
     }
 };
 
+let showInfo = false;
+let infoText = undefined;
+
+const infoStyle = {
+    fill: '#DB8EDB',
+    fontSize: 15,
+    wordWrap : true,
+    wordWrapWidth : 100,
+};
+
+const drawInfoMenu = () => {
+    showInfo = true;
+    const texture = PIXI.Texture.from("./assets/infobar.png");
+    const bar = new PIXI.Sprite(texture);
+    bar.x = windowWidth - 110;
+    bar.y = 40;
+    bar.scale.set(0.4, 0.4);
+    bar.interactive = true;
+    bar.buttonMode = false;
+    bar.anchor.set(0.5);
+    const infoBarText = new PIXI.Text(infoText, infoStyle)
+    infoBarText.x = windowWidth - 140;
+    infoBarText.y = 22;
+    infoCon.addChild(bar);
+    infoCon.addChild(infoBarText);
+};
+
+const closeInfoMenu = () => {
+    showInfo = false;
+};
+
 const drawDotButton = () => {
     const texture = PIXI.Texture.from("./assets/addDot.png");
     const button = new PIXI.Sprite(texture);
@@ -256,8 +289,19 @@ const drawDotButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", createDot);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Add Point'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 };
+
 
 const drawTrashButton = () => {
     const texture = PIXI.Texture.from("./assets/trash.png");
@@ -269,6 +313,16 @@ const drawTrashButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", clearBoard);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Clear Board'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 };
 
@@ -282,6 +336,16 @@ const drawTextButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", drawText);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Create a text input'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 };
 
@@ -295,6 +359,16 @@ const drawLineButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", makeSelecting);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Click 2 points to add line'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 };
 
@@ -308,6 +382,16 @@ const drawScreenShotButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", takeScreenshot);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Take a screenshot'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 };
 
@@ -321,6 +405,16 @@ const drawNameButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", startNaming);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Click on a point to name'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 };
 
@@ -334,6 +428,16 @@ const drawCircleButton = () => {
     button.buttonMode = true;
     button.anchor.set(0.5);
     button.on("pointerdown", makeSelectingCir);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Click 2 points to add a circle'; 
+        drawInfoMenu()
+    };
+    button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
 }
 
@@ -405,6 +509,7 @@ const openMenu = () => {
         ui.buttonMode = false;
         //ui.anchor.set(0.5);
         ui.zIndex = -1;
+        ui.on('mouseout', closeInfoMenu);
         menuCon.addChild(ui);
         renderer.stage.addChild(menuCon);
     } else {
@@ -491,6 +596,14 @@ const updateCircles = () => {
     }
 }
 
+const updateInfo = () => {
+    if (showInfo == true) {
+        menuCon.addChild(infoCon);
+    } else {
+        menuCon.removeChild(infoCon);
+    }
+};
+
 const init = () => {
     drawDotButton();
     drawLineButton();
@@ -515,6 +628,7 @@ stage.addChild(graph);
 stage.addChild(board);
 stage.addChild(gui);
 renderer.stage.addChild(stage);
+window.setInterval(console.log('hi'), 1000);
 
 renderer.ticker.add(function(delta) {
 	selectDots();
@@ -522,5 +636,6 @@ renderer.ticker.add(function(delta) {
 	updateLine();
     updateText();
 	updatePointNames();
-	updateCircles();
+    updateCircles();
+    updateInfo();
 });
