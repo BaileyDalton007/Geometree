@@ -1,3 +1,5 @@
+import {decimelToHex} from './stringGenerator.js';
+
 var canvas = document.getElementById("canvas");
 PIXI.utils.skipHello();
 
@@ -435,7 +437,7 @@ const drawCircleButton = () => {
             }
         }
         infoText = 'Click 2 points to add a circle'; 
-        drawInfoMenu()
+        drawInfoMenu();
     };
     button.on("mouseover", showThisInfo);
     menuCon.addChild(button);
@@ -628,7 +630,6 @@ stage.addChild(graph);
 stage.addChild(board);
 stage.addChild(gui);
 renderer.stage.addChild(stage);
-window.setInterval(console.log('hi'), 1000);
 
 renderer.ticker.add(function(delta) {
 	selectDots();
