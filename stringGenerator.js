@@ -10,6 +10,7 @@ export const decimelToHex = (n) => {
         hexArr.push(hexDict[r]);
     } while (d > 16);
     hexArr.push(hexDict[d]);
-    hexNum = hexArr.reverse().join('');
+    if (hexArr.length < 3) {hexArr.push(0)};
+    const hexNum = hexArr.reverse().join('');
     return hexNum;
 }
