@@ -1,4 +1,4 @@
-import {decimelToHex} from './stringGenerator.js';
+import {decimalToHex, hexToDecimal} from './stringGenerator.js';
 
 var canvas = document.getElementById("canvas");
 PIXI.utils.skipHello();
