@@ -261,7 +261,6 @@ const infoStyle = {
 };
 
 const createString = () => {
-    translateString("<P|26917635717D20625F|L|0201|C|0100|>")
     let stringArr = ['<'];
     if (dotArr.length > 0) {
         stringArr.push("P|" + savePoints(dotArr));
@@ -273,7 +272,8 @@ const createString = () => {
         stringArr.push("C|" + saveCircles(circleArr))
     }
     stringArr.push('>')
-    console.log(stringArr.join(''))
+    let output = (stringArr.join(''))
+    window.alert('This is your unique board generation code Copy and send to others to share boards'+output);
 };
 
 const translateString = (string) => {
@@ -324,14 +324,22 @@ const translateString = (string) => {
             for (let i = 0; i < cArr.length; i++) {
                 createCircle(Number(cArr[i][0]), Number(cArr[i][1]));
             }
-
-
         }
     } else {
         console.log('Not a vaild String');
     }
 }
 
+const inputString = () => {
+    let input = window.prompt('Paste unique board string to be generated')
+    if (input !== null && input !== "")
+        if (input.indexOf('<') == 0 && input.indexOf('>') == input.length - 1) {
+            translateString(input)
+        }
+        else {
+            window.prompt('Not a valid generation string')
+        }
+};
 
 const drawInfoMenu = () => {
     showInfo = true;
@@ -539,6 +547,29 @@ const drawShareButton = () => {
     menuCon.addChild(button);
 }
 
+const drawInputButton = () => {
+	const texture = PIXI.Texture.from("./assets/input.png");
+    const button = new PIXI.Sprite(texture);
+    button.x = windowWidth - 150;
+    button.y = 380;
+    button.scale.set(0.1, 0.1);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on("pointerdown", inputString);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Input unique string'; 
+        drawInfoMenu();
+    };
+    button.on("mouseover", showThisInfo);
+    menuCon.addChild(button);
+}
+
 const drawMenuButton = () => {
     const texture = PIXI.Texture.from("./assets/menu.png");
     const button = new PIXI.Sprite(texture);
@@ -710,6 +741,7 @@ const init = () => {
 	drawNameButton();
     drawCircleButton();
     drawShareButton();
+    drawInputButton();
     drawMenuButton();
     drawOptionButton();
 };
