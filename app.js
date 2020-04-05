@@ -261,11 +261,10 @@ const infoStyle = {
 };
 
 const createString = () => {
-    translateString("<P|1791DF3AB15A|>")
+    translateString("<P|26917635717D20625F|L|0201|C|0100|>")
     let stringArr = ['<'];
     if (dotArr.length > 0) {
         stringArr.push("P|" + savePoints(dotArr));
-        console.log(dotArr);
     }
     if (lineArr.length > 0) {
         stringArr.push("L|" + saveLines(lineArr));
@@ -278,9 +277,10 @@ const createString = () => {
 };
 
 const translateString = (string) => {
+    clearBoard()
     if (string.indexOf('<') == 0 && string.indexOf('>') == string.length - 1) {
         const pArr = [];
-        const pStart = string.indexOf('|')
+        const pStart = string.indexOf('P|') + 1
         const pEnd = string.indexOf('|', pStart + 1);
         const pData = string.substring(pStart + 1, pEnd - (pStart - 2))
         for (let i = 0; i*6 < pData.length; i++) {
@@ -294,6 +294,37 @@ const translateString = (string) => {
             createDot();
             dotArr[currIndex].x = pArr[i][0];
             dotArr[currIndex].y = pArr[i][1];
+        }
+        if (string.indexOf('L|') !== -1){
+            const lArr = [];
+            const lStart = string.indexOf('L|') + 1
+            const lEnd = string.indexOf('|', lStart + 1);
+            const lData = string.substring(lStart + 1, lEnd)
+            for (let i = 0; i*4 < lData.length; i++) {
+                let line = lData.slice(i*4, (i*4 + 4));
+                let s = line.substring(0, 2);
+                let e = line.substring(2, 4);
+                lArr.push([s, e])
+            }
+            for (let i = 0; i < lArr.length; i++) {
+                createLine(Number(lArr[i][0]), Number(lArr[i][1]));
+            }
+        }
+        if (string.indexOf('C|') !== -1){
+            const cArr = [];
+            const cStart = string.indexOf('C|') + 1
+            const cEnd = string.indexOf('|', cStart + 1);
+            const cData = string.substring(cStart + 1, cEnd)
+            for (let i = 0; i*4 < cData.length; i++) {
+                let cir = cData.slice(i*4, (i*4 + 4));
+                let s = cir.substring(0, 2);
+                let e = cir.substring(2, 4);
+                cArr.push([s, e])
+            }
+            for (let i = 0; i < cArr.length; i++) {
+                createCircle(Number(cArr[i][0]), Number(cArr[i][1]));
+            }
+
 
         }
     } else {
@@ -651,7 +682,6 @@ const createCircle = (c, r) => {
 const drawCircle = (c, r) => {
 	let centerPoint = dotArr[c];
 	let radiusPoint = dotArr[r];
-	
 	graph.drawCircle(centerPoint.x, centerPoint.y, Math.hypot(radiusPoint.x - centerPoint.x, radiusPoint.y - centerPoint.y));
 	graph.endFill();
 } 

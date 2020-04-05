@@ -38,7 +38,7 @@ export const savePoints = (pointArr) => {
         d.push(pos);
     }
     let data = d.join('');
-    let adata = data + '|'
+    let adata = data + '|';
     return adata;
 }
 
@@ -54,7 +54,8 @@ export const saveLines = (lineArr) => {
         d.push(pos);
     }
     let data = d.join('');
-    return data;
+    let adata = data + '|';
+    return adata;
 }
 
 export const saveCircles = (cirArr) => {
@@ -68,5 +69,6 @@ export const saveCircles = (cirArr) => {
         d.push(pos);
     }
     let data = d.join('');
-    return data;
+    let adata = data + '|'
+    return adata;
 }
