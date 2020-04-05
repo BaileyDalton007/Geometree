@@ -1,4 +1,4 @@
-import {decimalToHex, hexToDecimal} from './stringGenerator.js';
+import {savePoints, saveLines, saveCircles, hexToDecimal} from './stringGenerator.js';
 
 var canvas = document.getElementById("canvas");
 PIXI.utils.skipHello();
@@ -260,6 +260,48 @@ const infoStyle = {
     wordWrapWidth : 100,
 };
 
+const createString = () => {
+    translateString("<P|1791DF3AB15A|>")
+    let stringArr = ['<'];
+    if (dotArr.length > 0) {
+        stringArr.push("P|" + savePoints(dotArr));
+        console.log(dotArr);
+    }
+    if (lineArr.length > 0) {
+        stringArr.push("L|" + saveLines(lineArr));
+    }
+    if (circleArr.length > 0) {
+        stringArr.push("C|" + saveCircles(circleArr))
+    }
+    stringArr.push('>')
+    console.log(stringArr.join(''))
+};
+
+const translateString = (string) => {
+    if (string.indexOf('<') == 0 && string.indexOf('>') == string.length - 1) {
+        const pArr = [];
+        const pStart = string.indexOf('|')
+        const pEnd = string.indexOf('|', pStart + 1);
+        const pData = string.substring(pStart + 1, pEnd - (pStart - 2))
+        for (let i = 0; i*6 < pData.length; i++) {
+            let point = pData.slice(i*6, (i*6 + 6));
+            let x = point.substr(0, 3);
+            let y = point.substr(3, 5);
+            pArr.push([hexToDecimal(x), hexToDecimal(y)])
+        } 
+        for (let i = 0; i < pArr.length; i++) {
+            let currIndex = dotArr.length
+            createDot();
+            dotArr[currIndex].x = pArr[i][0];
+            dotArr[currIndex].y = pArr[i][1];
+
+        }
+    } else {
+        console.log('Not a vaild String');
+    }
+}
+
+
 const drawInfoMenu = () => {
     showInfo = true;
     const texture = PIXI.Texture.from("./assets/infobar.png");
@@ -443,6 +485,29 @@ const drawCircleButton = () => {
     menuCon.addChild(button);
 }
 
+const drawShareButton = () => {
+	const texture = PIXI.Texture.from("./assets/save.png");
+    const button = new PIXI.Sprite(texture);
+    button.x = windowWidth - 80;
+    button.y = 310;
+    button.scale.set(0.1, 0.1);
+    button.interactive = true;
+    button.buttonMode = true;
+    button.anchor.set(0.5);
+    button.on("pointerdown", createString);
+    const showThisInfo = () => {
+        if (infoText !== undefined){
+            for (let i = infoCon.children.length - 1; i >= 0; i--) {
+                infoCon.removeChild(infoCon.children[i]);
+            }
+        }
+        infoText = 'Gives unique string to share'; 
+        drawInfoMenu();
+    };
+    button.on("mouseover", showThisInfo);
+    menuCon.addChild(button);
+}
+
 const drawMenuButton = () => {
     const texture = PIXI.Texture.from("./assets/menu.png");
     const button = new PIXI.Sprite(texture);
@@ -613,7 +678,8 @@ const init = () => {
     drawTextButton();
     drawScreenShotButton();
 	drawNameButton();
-	drawCircleButton();
+    drawCircleButton();
+    drawShareButton();
     drawMenuButton();
     drawOptionButton();
 };
