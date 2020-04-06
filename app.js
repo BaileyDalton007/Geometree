@@ -17,6 +17,7 @@ const gui = new PIXI.Container();
 const menuCon = new PIXI.Container();
 const optionsCon = new PIXI.Container();
 const infoCon = new PIXI.Container();
+const inputPopup = new PIXI.Container();
 
 const stage = new PIXI.Container();
 
@@ -273,8 +274,15 @@ const createString = () => {
     }
     stringArr.push('>')
     let output = (stringArr.join(''))
-    window.alert('This is your unique board generation code Copy and send to others to share boards'+output);
+    copyTextToClipboard(output)
 };
+
+const copyTextToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(function() {
+    }, function(err) {
+      console.error('Async: Could not copy text: ', err);
+    });
+  }
 
 const translateString = (string) => {
     clearBoard()
@@ -330,15 +338,65 @@ const translateString = (string) => {
     }
 }
 
+const popStyle = {
+    fill: "#DB8EDB",
+    fontWeight: 'bold'
+};
+
+const drawPopup = () => {
+    inputPopup.sortableChildren = true;
+    const backtexture = PIXI.Texture.from('./assets/popupBackground.png')
+    const bg = new PIXI.Sprite(backtexture);
+    bg.x = windowWidth / 2;
+    bg.y = windowHeight / 2;
+    bg.scale.set(1, 1);
+    bg.interactive = true;
+    bg.buttonMode = false;
+    bg.anchor.set(0.5);
+    bg._zIndex = -1;
+    inputPopup.addChild(bg);
+
+    const text = new PIXI.Text('Paste unique board string here\n to generate copied board', popStyle);
+    text.x = bg.x
+    text.y = bg.y - (70);
+    text.anchor.set(0.5, 0.5);
+    text._zIndex = 1;
+    inputPopup.addChild(text);
+
+    const input = new PixiTextInput("", style);
+    input.width = 400;
+    input.background = true;
+    input.position.x = (windowWidth / 2)-(input.width/2);
+    input.position.y = windowHeight / 2;
+    input.caretColor = 0xffffff;
+    inputPopup.addChild(input);
+
+    const enterTexture = PIXI.Texture.from("./assets/enter.png");
+    const enter = new PIXI.Sprite(enterTexture);
+    enter.x = (windowWidth/2) + (input.width/2 + 30);
+    enter.y = windowHeight/2 + 15
+    enter.scale.set(0.08, 0.08);
+    enter.interactive = true;
+    enter.buttonMode = true;
+    enter.anchor.set(0.5);
+    enter.on("pointerdown", function(){translateString(input.text); renderer.stage.removeChild(inputPopup); input.text = ""});
+    inputPopup.addChild(enter);
+
+    const exitTexture = PIXI.Texture.from('./assets/exit.png');
+    const exit = new PIXI.Sprite(exitTexture);
+    exit.x = (windowWidth/2) + 280;
+    exit.y = (windowHeight/2) - 90;
+    exit.scale.set(0.1, 0.1);
+    exit.interactive = true;
+    exit.buttonMode = true;
+    exit.anchor.set(0.5);
+    exit.on('pointerdown', function(){input.text = ""; renderer.stage.removeChild(inputPopup)});
+    inputPopup.addChild(exit);
+
+}
+
 const inputString = () => {
-    let input = window.prompt('Paste unique board string to be generated')
-    if (input !== null && input !== "")
-        if (input.indexOf('<') == 0 && input.indexOf('>') == input.length - 1) {
-            translateString(input)
-        }
-        else {
-            window.prompt('Not a valid generation string')
-        }
+    renderer.stage.addChild(inputPopup)
 };
 
 const drawInfoMenu = () => {
@@ -540,7 +598,7 @@ const drawShareButton = () => {
                 infoCon.removeChild(infoCon.children[i]);
             }
         }
-        infoText = 'Gives unique string to share'; 
+        infoText = 'Copies unique string to share'; 
         drawInfoMenu();
     };
     button.on("mouseover", showThisInfo);
@@ -744,6 +802,8 @@ const init = () => {
     drawInputButton();
     drawMenuButton();
     drawOptionButton();
+
+    drawPopup();
 };
 
 const updateLine = () => {
