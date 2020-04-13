@@ -1,4 +1,6 @@
-import { savePoints, saveLines, saveCircles, hexToDecimal } from './stringGenerator.js'
+/* eslint-disable no-undef */
+
+import { savePoints, saveNames, saveLines, saveCircles, hexToDecimal } from './stringGenerator.js'
 
 var canvas = document.getElementById('canvas')
 PIXI.utils.skipHello()
@@ -89,7 +91,7 @@ function onDotDragStart (event) {
 	this.alpha = 0.5
 	this.dragging = true
 	selectedDotIndex = this.index
-	if (naming == true && namedDotsArr.includes(this) == false) {
+	if (naming === true && namedDotsArr.includes(this) === false) {
 		namedDotsArr.push(this)
 		namePoint(this.index)
 		naming = false
@@ -209,9 +211,7 @@ const updateText = () => {
 	}
 }
 
-let wait = false
 const takeScreenshot = () => {
-	wait = true
 	renderer.renderer.extract.canvas(renderer.stage).toBlob(b => {
 		const a = document.createElement('a')
 		document.body.append(a)
@@ -229,7 +229,7 @@ const startNaming = () => {
 	naming = true
 }
 
-const namePoint = (dotIndex) => {
+const namePoint = () => {
 	const input = new PixiTextInput('text', style)
 	input.width = 400
 	input.background = false
@@ -265,11 +265,14 @@ const createString = () => {
 	if (dotArr.length > 0) {
 		stringArr.push('P|' + savePoints(dotArr))
 	}
+	if (nameArr.length > 0) {
+		stringArr.push('N|' + saveNames(nameArr))
+	}
 	if (lineArr.length > 0) {
 		stringArr.push('L|' + saveLines(lineArr))
 	}
 	if (circleArr.length > 0) {
-		stringArr.push('C|' + saveCircles(circleArr))
+		stringArr.push('R|' + saveCircles(circleArr))
 	}
 	stringArr.push('>')
 	const output = (stringArr.join(''))
@@ -286,7 +289,7 @@ const copyTextToClipboard = (text) => {
 const translateString = (string) => {
 	try {
 		clearBoard()
-		if (string.indexOf('<') == 0 && string.indexOf('>') == string.length - 1) {
+		if (string.indexOf('<') === 0 && string.indexOf('>') === string.length - 1) {
 			const pArr = []
 			const pStart = string.indexOf('P|') + 1
 			const pEnd = string.indexOf('|', pStart + 1)
@@ -303,6 +306,23 @@ const translateString = (string) => {
 				dotArr[currIndex].x = pArr[i][0]
 				dotArr[currIndex].y = pArr[i][1]
 			}
+			if (string.indexOf('N|') !== -1) {
+				const nArr = []
+				const nStart = string.indexOf('N|') + 1
+				const nEnd = string.indexOf('|', nStart + 1)
+				const nData = string.substring(nStart + 1, nEnd)
+				const num = nData.split(',').length - 1
+				console.log(nData);
+				for (let i = 0; i < num; i++) {
+					let s = nData.indexOf('{')
+					let e = nData.indexOf('}')
+					const d = string.substring(s + 1, e)
+					console.log(d);
+				}
+				for (let i = 0; i < nArr.length; i++) {
+					//hi
+				}
+			}
 			if (string.indexOf('L|') !== -1) {
 				const lArr = []
 				const lStart = string.indexOf('L|') + 1
@@ -318,9 +338,9 @@ const translateString = (string) => {
 					createLine(Number(lArr[i][0]), Number(lArr[i][1]))
 				}
 			}
-			if (string.indexOf('C|') !== -1) {
+			if (string.indexOf('R|') !== -1) {
 				const cArr = []
-				const cStart = string.indexOf('C|') + 1
+				const cStart = string.indexOf('R|') + 1
 				const cEnd = string.indexOf('|', cStart + 1)
 				const cData = string.substring(cStart + 1, cEnd)
 				for (let i = 0; i * 4 < cData.length; i++) {
@@ -659,9 +679,9 @@ const drawOptionButton = () => {
 
 let isOptionsOpen = false
 const openOptions = () => {
-	if (isOptionsOpen == false) {
+	if (isOptionsOpen === false) {
 		isOptionsOpen = true
-		if (isMenuOpen == true) {
+		if (isMenuOpen === true) {
 			openMenu()
 		}
 		const texture = PIXI.Texture.from('./assets/uiBackground.png')
@@ -683,9 +703,9 @@ const openOptions = () => {
 
 let isMenuOpen = false
 const openMenu = () => {
-	if (isMenuOpen == false) {
+	if (isMenuOpen === false) {
 		isMenuOpen = true
-		if (isOptionsOpen == true) {
+		if (isOptionsOpen === true) {
 			openOptions()
 		}
 		const texture = PIXI.Texture.from('./assets/uiBackground.png')
@@ -720,9 +740,9 @@ const makeSelecting = () => {
 const selectDots = () => {
 	if (selecting) {
 		if (selectedDotIndex !== undefined) {
-			if (startP == undefined) {
+			if (startP === undefined) {
 				startP = selectedDotIndex
-			} else if (endP == undefined && selectedDotIndex !== startP) {
+			} else if (endP === undefined && selectedDotIndex !== startP) {
 				endP = selectedDotIndex
 				createLine(startP, endP)
 				selecting = false
@@ -745,9 +765,9 @@ const makeSelectingCir = () => {
 const selectDotsForCir = () => {
 	if (selectingCir) {
 		if (selectedDotIndex !== undefined) {
-			if (startCenter == undefined) {
+			if (startCenter === undefined) {
 				startCenter = selectedDotIndex
-			} else if (secCirPoint == undefined && selectedDotIndex !== startCenter) {
+			} else if (secCirPoint === undefined && selectedDotIndex !== startCenter) {
 				secCirPoint = selectedDotIndex
 				createCircle(startCenter, secCirPoint)
 				selectingCir = false
@@ -782,7 +802,7 @@ const updateCircles = () => {
 }
 
 const updateInfo = () => {
-	if (showInfo == true) {
+	if (showInfo === true) {
 		menuCon.addChild(infoCon)
 	} else {
 		menuCon.removeChild(infoCon)
@@ -818,7 +838,7 @@ stage.addChild(board)
 stage.addChild(gui)
 renderer.stage.addChild(stage)
 
-renderer.ticker.add(function (delta) {
+renderer.ticker.add(function () {
 	selectDots()
 	selectDotsForCir()
 	updateLine()
